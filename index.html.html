@@ -1,0 +1,2820 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <title>le;Ciel</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"
+    />
+    <style>
+      :root {
+        --bg: #f5f4f1;
+        --surface: #ffffff;
+        --surface2: #f0eee9;
+        --border: rgba(0, 0, 0, 0.1);
+        --border2: rgba(0, 0, 0, 0.06);
+        --txt: #111111;
+        --txt2: #666666;
+        --txt3: #999999;
+        --accent: #2d6a4f;
+        --accent2: #1b4332;
+        --danger: #c0392b;
+        --warn: #d4682b;
+        --info: #1a5276;
+        --purple: #4a235a;
+        --safe-b: env(safe-area-inset-bottom, 0px);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      body {
+        font-family:
+          -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo,
+          sans-serif;
+        font-size: 15px;
+        color: var(--txt);
+      }
+
+      /* ─── レイアウト ─── */
+      #app {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        height: 100dvh;
+        max-width: 430px;
+        margin: 0 auto;
+        background: var(--bg);
+      }
+      #header {
+        background: var(--surface);
+        border-bottom: 0.5px solid var(--border);
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        z-index: 30;
+        position: relative;
+      }
+      #header h1 {
+        flex: 1;
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--txt);
+        letter-spacing: -0.3px;
+      }
+      .header-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 11px;
+        border: 0.5px solid var(--border);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        color: var(--txt2);
+      }
+      .header-btn i {
+        font-size: 21px;
+      }
+      .header-btn:active {
+        background: var(--surface2);
+      }
+
+      /* ─── ドロワー ─── */
+      #overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.38);
+        z-index: 50;
+        opacity: 0;
+        transition: opacity 0.22s;
+      }
+      #overlay.show {
+        display: block;
+        opacity: 1;
+      }
+      #drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 285px;
+        background: var(--surface);
+        z-index: 60;
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.32, 0, 0.17, 1);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        box-shadow: 2px 0 20px rgba(0, 0, 0, 0.12);
+      }
+      #drawer.show {
+        transform: translateX(0);
+      }
+      .drawer-head {
+        padding: 22px 16px 14px;
+        border-bottom: 0.5px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .drawer-logo {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--txt);
+        letter-spacing: -0.5px;
+      }
+      .drawer-logo i {
+        font-size: 24px;
+        color: var(--accent);
+      }
+      .drawer-close {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        border: 0.5px solid var(--border);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--txt2);
+      }
+      .drawer-close i {
+        font-size: 19px;
+      }
+      .nav-group-label {
+        padding: 14px 16px 4px;
+        font-size: 11px;
+        color: var(--txt3);
+        letter-spacing: 0.6px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 13px 16px;
+        cursor: pointer;
+        font-size: 15px;
+        color: var(--txt2);
+        min-height: 50px;
+        transition: background 0.1s;
+        position: relative;
+      }
+      .nav-item i {
+        font-size: 21px;
+        flex-shrink: 0;
+        width: 24px;
+        text-align: center;
+      }
+      .nav-item .nav-badge {
+        margin-left: auto;
+        background: #fcebeb;
+        color: var(--danger);
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+      .nav-item.active {
+        background: #edf7f2;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .nav-item.active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 6px;
+        bottom: 6px;
+        width: 3px;
+        background: var(--accent);
+        border-radius: 0 3px 3px 0;
+      }
+      .nav-item:active {
+        background: var(--surface2);
+      }
+      .drawer-footer {
+        margin-top: auto;
+        padding: 16px;
+        border-top: 0.5px solid var(--border);
+      }
+      .drawer-footer-txt {
+        font-size: 12px;
+        color: var(--txt3);
+        text-align: center;
+      }
+
+      /* ─── メインコンテンツ ─── */
+      #main {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding: 14px 14px calc(70px + var(--safe-b));
+      }
+
+      /* ─── ページ ─── */
+      .pg {
+        display: none;
+      }
+      .pg.active {
+        display: block;
+      }
+
+      /* ─── 選択行 ─── */
+      .sel-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .sel-row select {
+        flex: 1;
+        padding: 11px 12px;
+        border: 0.5px solid var(--border);
+        border-radius: 11px;
+        font-size: 14px;
+        background: var(--surface);
+        color: var(--txt);
+        -webkit-appearance: none;
+        outline: none;
+        font-family: inherit;
+      }
+      .sel-row select:focus {
+        border-color: var(--accent);
+      }
+
+      /* ─── メトリクス ─── */
+      .mets {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+        margin-bottom: 14px;
+      }
+      .met {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 13px;
+        padding: 13px 13px;
+      }
+      .met-l {
+        font-size: 11px;
+        color: var(--txt3);
+        margin-bottom: 4px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+      }
+      .met-v {
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: -0.8px;
+        line-height: 1.1;
+      }
+
+      /* ─── テーブル（横スクロール） ─── */
+      .tbl-hint {
+        font-size: 12px;
+        color: var(--txt3);
+        margin-bottom: 7px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .tbl-hint i {
+        font-size: 14px;
+      }
+      .tbl-wrap {
+        border: 0.5px solid var(--border);
+        border-radius: 13px;
+        background: var(--surface);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 12px;
+        -webkit-transform: translateZ(0);
+      }
+      .tbl-wrap table {
+        border-collapse: collapse;
+        white-space: nowrap;
+        width: 100%;
+      }
+      .tbl-wrap th {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--txt3);
+        padding: 9px 13px;
+        background: var(--surface2);
+        border-bottom: 0.5px solid var(--border);
+        text-align: left;
+        letter-spacing: 0.2px;
+        position: sticky;
+        top: 0;
+      }
+      .tbl-wrap th.r,
+      .tbl-wrap td.r {
+        text-align: right;
+      }
+      .tbl-wrap td {
+        padding: 12px 13px;
+        border-bottom: 0.5px solid var(--border2);
+        font-size: 14px;
+        vertical-align: middle;
+      }
+      .tbl-wrap tr:last-child td {
+        border-bottom: none;
+      }
+      .tbl-wrap tr:active td {
+        background: var(--surface2);
+      }
+
+      /* ─── バッジ ─── */
+      .bdg {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        letter-spacing: 0.1px;
+      }
+
+      /* ─── カード（入出庫リスト） ─── */
+      .card-list {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        margin-bottom: 14px;
+      }
+      .lcard {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 13px;
+        padding: 13px 14px;
+      }
+      .lcard-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 5px;
+      }
+      .lcard-row:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ─── フォーム ─── */
+      .fcard {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 13px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      .fr {
+        margin-bottom: 14px;
+      }
+      .fr label {
+        display: block;
+        font-size: 12px;
+        color: var(--txt2);
+        margin-bottom: 6px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+      .fr input,
+      .fr select {
+        width: 100%;
+        padding: 13px 14px;
+        border: 0.5px solid var(--border);
+        border-radius: 11px;
+        font-size: 16px;
+        background: var(--surface);
+        color: var(--txt);
+        outline: none;
+        -webkit-appearance: none;
+        font-family: inherit;
+        transition: border-color 0.15s;
+      }
+      .fr input:focus,
+      .fr select:focus {
+        border-color: var(--accent);
+      }
+      .fr2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .etabs {
+        display: flex;
+        background: var(--surface2);
+        border-radius: 11px;
+        padding: 3px;
+        margin-bottom: 16px;
+        gap: 3px;
+      }
+      .etab {
+        flex: 1;
+        padding: 11px 8px;
+        font-size: 14px;
+        cursor: pointer;
+        color: var(--txt2);
+        border: none;
+        background: transparent;
+        border-radius: 9px;
+        text-align: center;
+        font-family: inherit;
+        font-weight: 500;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .etab.active {
+        background: var(--surface);
+        color: var(--accent);
+        font-weight: 700;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      .sub-btn {
+        width: 100%;
+        padding: 15px;
+        border-radius: 13px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 54px;
+        font-family: inherit;
+        letter-spacing: -0.2px;
+        transition: background 0.15s;
+      }
+      .sub-btn:active {
+        background: var(--accent2);
+      }
+      .sub-btn:disabled {
+        opacity: 0.5;
+      }
+      .sub-hint {
+        font-size: 12px;
+        color: var(--txt3);
+        text-align: center;
+        margin-top: 10px;
+        line-height: 1.6;
+      }
+
+      /* ─── ボタン ─── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        border: 0.5px solid var(--border);
+        background: var(--surface);
+        color: var(--txt);
+        font-size: 14px;
+        cursor: pointer;
+        white-space: nowrap;
+        min-height: 42px;
+        font-family: inherit;
+        font-weight: 500;
+      }
+      .btn:active {
+        background: var(--surface2);
+      }
+      .btn.green {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .btn.green:active {
+        background: var(--accent2);
+      }
+      .btn.sm {
+        padding: 7px 12px;
+        font-size: 13px;
+        min-height: 36px;
+        border-radius: 9px;
+      }
+      .btn.danger {
+        border-color: #f09595;
+        color: var(--danger);
+        background: transparent;
+      }
+      .btn.danger i {
+        font-size: 16px;
+      }
+      .row-btns {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      /* ─── フィルターバー ─── */
+      .fbar {
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2px;
+        margin-bottom: 12px;
+      }
+      .fbar::-webkit-scrollbar {
+        display: none;
+      }
+      .fb {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 0.5px solid var(--border);
+        background: var(--surface);
+        font-size: 13px;
+        cursor: pointer;
+        color: var(--txt2);
+        white-space: nowrap;
+        flex-shrink: 0;
+        min-height: 36px;
+        font-family: inherit;
+        font-weight: 500;
+      }
+      .fb.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      /* ─── アラートカード ─── */
+      .al-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 14px;
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 13px;
+        margin-bottom: 9px;
+      }
+      .al-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .al-icon i {
+        font-size: 22px;
+      }
+      .al-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .al-name {
+        font-size: 15px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .al-sub {
+        font-size: 12px;
+        color: var(--txt2);
+        margin-top: 2px;
+      }
+
+      /* ─── レポートカード ─── */
+      .rcard {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 13px;
+        padding: 14px;
+        margin-bottom: 11px;
+      }
+      .rcard-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 11px;
+        letter-spacing: -0.2px;
+      }
+      .rrow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 0.5px solid var(--border2);
+      }
+      .rrow:last-child {
+        border-bottom: none;
+      }
+
+      /* ─── モーダル（ボトムシート） ─── */
+      #modal-ov {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 70;
+        background: rgba(0, 0, 0, 0.32);
+        align-items: flex-end;
+        justify-content: center;
+      }
+      #modal-ov.show {
+        display: flex;
+      }
+      #modal-sheet {
+        background: var(--surface);
+        border-radius: 22px 22px 0 0;
+        width: 100%;
+        max-width: 430px;
+        max-height: 90dvh;
+        overflow-y: auto;
+        padding: 0 16px calc(28px + var(--safe-b));
+      }
+      .modal-handle {
+        width: 44px;
+        height: 5px;
+        background: var(--border);
+        border-radius: 3px;
+        margin: 13px auto 18px;
+      }
+      .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        letter-spacing: -0.3px;
+      }
+      .modal-foot {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 4px;
+      }
+      .modal-foot button {
+        flex: 1;
+        justify-content: center;
+      }
+
+      /* ─── ボトムナビ ─── */
+      #bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 430px;
+        background: var(--surface);
+        border-top: 0.5px solid var(--border);
+        display: flex;
+        z-index: 40;
+        padding-bottom: var(--safe-b);
+      }
+      .bni {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 9px 4px 7px;
+        cursor: pointer;
+        color: var(--txt3);
+        font-size: 10px;
+        border: none;
+        background: transparent;
+        position: relative;
+        min-height: 52px;
+        font-family: inherit;
+        font-weight: 500;
+        transition: color 0.15s;
+      }
+      .bni i {
+        font-size: 23px;
+        display: block;
+      }
+      .bni.active {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .bni-dot {
+        position: absolute;
+        top: 7px;
+        right: calc(50% - 17px);
+        width: 9px;
+        height: 9px;
+        background: var(--danger);
+        border-radius: 50%;
+        display: none;
+        border: 2px solid var(--surface);
+      }
+      .bni-dot.on {
+        display: block;
+      }
+
+      /* ─── トースト ─── */
+      #toast {
+        position: fixed;
+        bottom: calc(68px + var(--safe-b) + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(17, 17, 17, 0.92);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 22px;
+        font-size: 14px;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+        pointer-events: none;
+        max-width: 88vw;
+        text-align: center;
+        font-weight: 500;
+      }
+      #toast.on {
+        opacity: 1;
+      }
+
+      /* ─── empty state ─── */
+      .empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--txt3);
+      }
+      .empty i {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 10px;
+        color: var(--border);
+      }
+      .empty p {
+        font-size: 14px;
+      }
+
+      /* ─── 棚卸テーブル ─── */
+      .tax-tbl {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .tax-tbl th {
+        font-size: 11px;
+        color: var(--txt3);
+        padding: 5px 10px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 0.5px solid var(--border);
+      }
+      .tax-tbl th.r,
+      .tax-tbl td.r {
+        text-align: right;
+      }
+      .tax-tbl td {
+        padding: 9px 10px;
+        font-size: 14px;
+        border-bottom: 0.5px solid var(--border2);
+      }
+      .tax-tbl tr:last-child td {
+        border-bottom: none;
+      }
+      .tax-tbl tfoot td {
+        font-weight: 700;
+        font-size: 15px;
+        border-top: 0.5px solid var(--border);
+        border-bottom: none;
+        padding-top: 11px;
+      }
+
+      /* ─── 確定申告ヒント ─── */
+      .tax-hint {
+        background: #f0f7f4;
+        border: 0.5px solid #a8d5bf;
+        border-radius: 11px;
+        padding: 13px 14px;
+        margin-top: 0;
+      }
+      .tax-hint ul {
+        font-size: 13px;
+        color: #1b4332;
+        line-height: 2;
+        padding-left: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- ヘッダー -->
+      <div id="header">
+        <button
+          class="header-btn"
+          onclick="toggleDrawer()"
+          aria-label="メニュー"
+        >
+          <i class="ti ti-menu-2"></i>
+        </button>
+        <h1 id="page-title">現金出納帳</h1>
+        <button
+          class="header-btn"
+          onclick="exportCurrent()"
+          aria-label="Excel出力"
+        >
+          <i class="ti ti-download"></i>
+        </button>
+      </div>
+
+      <!-- ドロワー -->
+      <div id="overlay" onclick="closeDrawer()"></div>
+      <div id="drawer">
+        <div class="drawer-head">
+          <div class="drawer-logo"><i class="ti ti-scissors"></i>le;Cel</div>
+          <button
+            class="drawer-close"
+            onclick="closeDrawer()"
+            aria-label="閉じる"
+          >
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="nav-group-label">出納帳</div>
+        <div
+          class="nav-item active"
+          data-page="ledger"
+          onclick="goPage('ledger', '現金出納帳', this)"
+        >
+          <i class="ti ti-book"></i>現金出納帳
+        </div>
+        <div
+          class="nav-item"
+          data-page="entry"
+          onclick="goPage('entry', '記録する', this)"
+        >
+          <i class="ti ti-circle-plus"></i>記録する
+        </div>
+        <div class="nav-group-label">在庫</div>
+        <div
+          class="nav-item"
+          data-page="inventory"
+          onclick="goPage('inventory', '在庫一覧', this)"
+        >
+          <i class="ti ti-package"></i>在庫一覧
+        </div>
+        <div
+          class="nav-item"
+          data-page="stock"
+          onclick="goPage('stock', '入出庫記録', this)"
+        >
+          <i class="ti ti-arrows-exchange"></i>入出庫記録
+        </div>
+        <div
+          class="nav-item"
+          data-page="alerts"
+          onclick="goPage('alerts', '補充アラート', this)"
+        >
+          <i class="ti ti-bell"></i>補充アラート<span
+            class="nav-badge"
+            id="nav-badge"
+            style="display: none"
+            >0</span
+          >
+        </div>
+        <div class="nav-group-label">決算・棚卸</div>
+        <div
+          class="nav-item"
+          data-page="report"
+          onclick="goPage('report', '月次集計', this)"
+        >
+          <i class="ti ti-chart-bar"></i>月次集計
+        </div>
+        <div
+          class="nav-item"
+          data-page="tax"
+          onclick="goPage('tax', '棚卸・確定申告', this)"
+        >
+          <i class="ti ti-file-text"></i>棚卸・確定申告
+        </div>
+        <div class="drawer-footer">
+          <div class="drawer-footer-txt">
+            データはこの端末に保存されます<br />Excel出力で他端末と共有できます
+          </div>
+        </div>
+      </div>
+
+      <!-- メインコンテンツ -->
+      <div id="main">
+        <!-- ① 現金出納帳 -->
+        <div id="pg-ledger" class="pg active">
+          <div class="sel-row">
+            <select id="l-year" onchange="renderLedger()"></select>
+            <select id="l-month" onchange="renderLedger()"></select>
+          </div>
+          <div class="mets" id="l-mets"></div>
+          <div class="tbl-hint">
+            <i class="ti ti-arrows-horizontal"></i
+            >横にスクロールして全項目を確認
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <colgroup>
+                <col style="min-width: 70px" />
+                <col style="min-width: 90px" />
+                <col style="min-width: 90px" />
+                <col style="min-width: 90px" />
+                <col style="min-width: 120px" />
+                <col style="min-width: 130px" />
+                <col style="min-width: 160px" />
+                <col style="min-width: 50px" />
+                <col style="min-width: 110px" />
+                <col style="min-width: 40px" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>日付</th>
+                  <th class="r">収入</th>
+                  <th class="r">支出</th>
+                  <th class="r">残高</th>
+                  <th>科目</th>
+                  <th>支払先</th>
+                  <th>在庫品目</th>
+                  <th class="r">数量</th>
+                  <th>備考</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="l-tbody"></tbody>
+            </table>
+          </div>
+          <div style="display: flex; justify-content: flex-end">
+            <button class="btn green sm" onclick="exportLedger()">
+              <i class="ti ti-download"></i>この期間をExcel出力
+            </button>
+          </div>
+        </div>
+
+        <!-- ② 記録する -->
+        <div id="pg-entry" class="pg">
+          <div class="fcard">
+            <div class="etabs">
+              <button
+                class="etab active"
+                id="et-exp"
+                onclick="setETab('expense')"
+              >
+                支出（使った）
+              </button>
+              <button class="etab" id="et-inc" onclick="setETab('income')">
+                収入（売上・預入）
+              </button>
+            </div>
+            <div class="fr2">
+              <div class="fr">
+                <label>日付 <span style="color: var(--danger)">*</span></label
+                ><input type="date" id="e-date" />
+              </div>
+              <div class="fr">
+                <label
+                  >金額（円）<span style="color: var(--danger)">*</span></label
+                ><input
+                  type="number"
+                  id="e-amount"
+                  placeholder="0"
+                  min="0"
+                  inputmode="numeric"
+                />
+              </div>
+            </div>
+            <div class="fr">
+              <label
+                >内容（科目）<span style="color: var(--danger)">*</span></label
+              ><select id="e-cat" onchange="onCatCh()"></select>
+            </div>
+            <div class="fr">
+              <label>支払先・仕入先</label
+              ><input
+                type="text"
+                id="e-payee"
+                list="payee-dl"
+                placeholder="例: ネイルパートナー"
+              /><datalist id="payee-dl"></datalist>
+            </div>
+            <div id="e-inv-area" style="display: none">
+              <div class="fr">
+                <label>在庫品目（仕入の場合）</label
+                ><select id="e-item" onchange="onItemCh()">
+                  <option value="">（品目を選択）</option>
+                </select>
+              </div>
+              <div class="fr2">
+                <div class="fr">
+                  <label>入荷数量</label
+                  ><input
+                    type="number"
+                    id="e-qty"
+                    placeholder="0"
+                    min="0"
+                    inputmode="numeric"
+                  />
+                </div>
+                <div class="fr">
+                  <label>仕入単価（円）</label
+                  ><input
+                    type="number"
+                    id="e-up"
+                    placeholder="0"
+                    min="0"
+                    inputmode="numeric"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="fr" style="margin-bottom: 18px">
+              <label>備考</label
+              ><input type="text" id="e-note" placeholder="任意メモ" />
+            </div>
+            <button class="sub-btn" id="e-submit" onclick="submitEntry()">
+              <i class="ti ti-check"></i>記録する
+            </button>
+            <p class="sub-hint">「仕入」を選ぶと在庫数が自動で更新されます</p>
+          </div>
+        </div>
+
+        <!-- ③ 在庫一覧 -->
+        <div id="pg-inventory" class="pg">
+          <div class="fbar">
+            <button class="fb active" onclick="setIF('all', this)">
+              すべて
+            </button>
+            <button class="fb" onclick="setIF('美容薬剤・カラー剤', this)">
+              薬剤・カラー剤
+            </button>
+            <button class="fb" onclick="setIF('販売品', this)">販売品</button>
+            <button class="fb" onclick="setIF('ネイル用品', this)">
+              ネイル用品
+            </button>
+            <button class="fb" onclick="setIF('タオル・衛生消耗品', this)">
+              タオル・衛生消耗品
+            </button>
+            <button class="fb" onclick="setIF('備品・その他', this)">
+              備品・その他
+            </button>
+          </div>
+          <div class="tbl-hint">
+            <i class="ti ti-arrows-horizontal"></i
+            >横にスクロールして全項目を確認
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <colgroup>
+                <col style="min-width: 155px" />
+                <col style="min-width: 110px" />
+                <col style="min-width: 55px" />
+                <col style="min-width: 40px" />
+                <col style="min-width: 78px" />
+                <col style="min-width: 88px" />
+                <col style="min-width: 70px" />
+                <col style="min-width: 52px" />
+                <col style="min-width: 52px" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>商品名</th>
+                  <th>カテゴリ</th>
+                  <th class="r">在庫</th>
+                  <th>単位</th>
+                  <th class="r">単価</th>
+                  <th class="r">評価額</th>
+                  <th>状態</th>
+                  <th>使用</th>
+                  <th>修正</th>
+                </tr>
+              </thead>
+              <tbody id="inv-tbody"></tbody>
+            </table>
+          </div>
+          <div class="row-btns">
+            <button class="btn sm" onclick="openAddItemModal()">
+              <i class="ti ti-circle-plus"></i>商品追加
+            </button>
+            <button class="btn green sm" onclick="exportInventory()">
+              <i class="ti ti-download"></i>棚卸表出力
+            </button>
+          </div>
+        </div>
+
+        <!-- ④ 入出庫記録 -->
+        <div id="pg-stock" class="pg">
+          <div class="row-btns" style="margin-bottom: 14px">
+            <button class="btn sm" onclick="openStockModal('use')">
+              <i class="ti ti-minus"></i>使用登録
+            </button>
+            <button class="btn green sm" onclick="openStockModal('receive')">
+              <i class="ti ti-plus"></i>入荷登録
+            </button>
+          </div>
+          <div class="card-list" id="stk-list"></div>
+        </div>
+
+        <!-- ⑤ 補充アラート -->
+        <div id="pg-alerts" class="pg">
+          <div id="alert-list"></div>
+        </div>
+
+        <!-- ⑥ 月次集計 -->
+        <div id="pg-report" class="pg">
+          <div class="sel-row">
+            <select id="r-year" onchange="renderReport()"></select>
+            <select id="r-month" onchange="renderReport()"></select>
+          </div>
+          <div class="mets" id="r-mets"></div>
+          <div class="rcard" id="r-cats"></div>
+        </div>
+
+        <!-- ⑦ 棚卸・確定申告 -->
+        <div id="pg-tax" class="pg">
+          <div class="sel-row" style="margin-bottom: 12px">
+            <select
+              id="t-year"
+              onchange="renderTax()"
+              style="flex: none; width: auto"
+            ></select>
+          </div>
+          <div id="tax-body"></div>
+          <div class="row-btns">
+            <button class="btn green sm" onclick="exportInventory()">
+              <i class="ti ti-download"></i>棚卸表Excel
+            </button>
+            <button class="btn green sm" onclick="exportLedger()">
+              <i class="ti ti-download"></i>出納帳Excel
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- /main -->
+
+      <!-- ボトムナビ -->
+      <nav id="bottom-nav">
+        <button
+          class="bni active"
+          id="bn-ledger"
+          onclick="goPage('ledger', '現金出納帳', null)"
+        >
+          <i class="ti ti-book"></i>出納帳
+        </button>
+        <button
+          class="bni"
+          id="bn-entry"
+          onclick="goPage('entry', '記録する', null)"
+        >
+          <i class="ti ti-circle-plus"></i>記録
+        </button>
+        <button
+          class="bni"
+          id="bn-inventory"
+          onclick="goPage('inventory', '在庫一覧', null)"
+        >
+          <i class="ti ti-package"></i>在庫
+        </button>
+        <button
+          class="bni"
+          id="bn-alerts"
+          onclick="goPage('alerts', '補充アラート', null)"
+        >
+          <i class="ti ti-bell"></i>アラート<span
+            class="bni-dot"
+            id="bni-dot"
+          ></span>
+        </button>
+        <button
+          class="bni"
+          id="bn-report"
+          onclick="goPage('report', '集計', null)"
+        >
+          <i class="ti ti-chart-bar"></i>集計
+        </button>
+      </nav>
+    </div>
+
+    <!-- モーダル（ボトムシート） -->
+    <div
+      id="modal-ov"
+      onclick="if (event.target.id === 'modal-ov') closeModal();"
+    >
+      <div id="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="m-title"></div>
+        <div id="m-body"></div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <!-- ══════════════════ 合言葉ロック画面 ══════════════════ -->
+    <div
+      id="lock-screen"
+      style="
+        position: fixed;
+        inset: 0;
+        background: #f5f4f1;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          border: 0.5px solid rgba(0, 0, 0, 0.1);
+          border-radius: 14px;
+          padding: 28px 22px;
+          max-width: 340px;
+          width: 100%;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        "
+      >
+        <div
+          style="
+            font-size: 20px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+          "
+        >
+          le;Ciel
+        </div>
+        <div style="font-size: 13px; color: #666; margin-bottom: 18px">
+          合言葉を入力してください
+        </div>
+        <input
+          id="lock-input"
+          type="password"
+          autocomplete="off"
+          inputmode="text"
+          style="
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            font-size: 15px;
+            background: #fff;
+            outline: none;
+            margin-bottom: 10px;
+          "
+        />
+        <div
+          id="lock-err"
+          style="
+            font-size: 12px;
+            color: #c0392b;
+            min-height: 16px;
+            margin-bottom: 8px;
+          "
+        ></div>
+        <button
+          id="lock-btn"
+          style="
+            width: 100%;
+            padding: 13px;
+            background: #2d6a4f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+          "
+        >
+          開く
+        </button>
+        <div
+          style="
+            font-size: 11px;
+            color: #999;
+            margin-top: 14px;
+            line-height: 1.5;
+          "
+        >
+          ※ 同じ合言葉を入れた端末同士でデータが同期されます。<br />初回はチームで合言葉を決めて共有してください。
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ Firebase + クラウド同期 ══════════════════ -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+      import {
+        getFirestore,
+        doc,
+        onSnapshot,
+        setDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+      // ─────────────────────────────────────────────
+      //  ↓↓↓ Firebase Console で取得した設定をここに貼り付け ↓↓↓
+      //  プロジェクト設定 → 全般 → ウェブアプリ → SDK設定 → 設定
+      // ─────────────────────────────────────────────
+      const firebaseConfig = {
+        apiKey: "AIzaSyAMPIoM1BzSM68LAR13yanUsCIC9_712Qs",
+        authDomain: "leciel-inventory.firebaseapp.com",
+        projectId: "leciel-inventory",
+        storageBucket: "leciel-inventory.firebasestorage.app",
+        messagingSenderId: "824539423140",
+        appId: "1:824539423140:web:23df77dd02ec3758c3e131",
+        measurementId: "G-RRXEK4V3FY",
+      };
+      // ─────────────────────────────────────────────
+
+      const fbApp = initializeApp(firebaseConfig);
+      const db = getFirestore(fbApp);
+
+      async function sha256(s) {
+        const buf = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(s),
+        );
+        return Array.from(new Uint8Array(buf))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      const LOCK_KEY = "leciel_pass";
+
+      async function unlock(pass) {
+        const docId = await sha256("salon_v2::" + pass);
+        const ref = doc(db, "salonApps", docId);
+        window.cloud = { ref, setDoc, onSnapshot, serverTimestamp };
+        try {
+          localStorage.setItem(LOCK_KEY, pass);
+        } catch (e) {}
+        document.getElementById("lock-screen").style.display = "none";
+        window.dispatchEvent(new Event("cloud-ready"));
+      }
+
+      document
+        .getElementById("lock-btn")
+        .addEventListener("click", async () => {
+          const v = document.getElementById("lock-input").value.trim();
+          if (!v) {
+            document.getElementById("lock-err").textContent =
+              "合言葉を入力してください";
+            return;
+          }
+          document.getElementById("lock-err").textContent = "";
+          try {
+            await unlock(v);
+          } catch (e) {
+            document.getElementById("lock-err").textContent =
+              "接続に失敗しました: " + (e && e.message ? e.message : e);
+          }
+        });
+      document.getElementById("lock-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("lock-btn").click();
+      });
+
+      // 既にこの端末で合言葉を入れている場合は自動解除
+      const saved = (() => {
+        try {
+          return localStorage.getItem(LOCK_KEY);
+        } catch (e) {
+          return null;
+        }
+      })();
+      if (saved) {
+        unlock(saved).catch(() => {});
+      } else {
+        setTimeout(() => document.getElementById("lock-input").focus(), 100);
+      }
+    </script>
+
+    <script>
+      /* ══════════════════ 定数 ══════════════════ */
+      const PAYEES = [
+        "ネイルパートナー",
+        "ビューティーガレージ",
+        "MTG",
+        "M TG",
+        "TAT",
+        "ファイブ",
+        "ダスキン",
+        "バルコランドリー",
+        "ダイソー",
+        "ドラッグストア",
+        "Amazon",
+        "セブン",
+        "佐川",
+        "ヤマト",
+        "ルーエ",
+        "KETUCA",
+        "アディクト",
+        "Addict",
+        "Ash中野",
+        "ニトリ",
+        "ハンズ",
+      ];
+      const CAT_INV = [
+        "美容薬剤・カラー剤",
+        "販売品",
+        "ネイル用品",
+        "タオル・衛生消耗品",
+        "備品・その他",
+      ];
+      const UNITS = [
+        "本",
+        "個",
+        "袋",
+        "箱",
+        "セット",
+        "kg",
+        "g",
+        "ml",
+        "枚",
+        "式",
+        "パック",
+      ];
+      const EXP = [
+        "仕入",
+        "衛生管理費",
+        "備品代",
+        "消耗品",
+        "打合せ",
+        "飲食代",
+        "交通費",
+        "郵送料・レターパック",
+        "振込手数料",
+        "コピー代",
+        "書籍代",
+        "諸会費",
+        "コスチューム代",
+        "給与",
+        "駐車料金",
+        "借入金返済",
+        "借入金利息",
+        "引出",
+        "その他",
+      ];
+      const INC = ["売上", "預入", "その他収入"];
+
+      /* 科目バッジカラー */
+      const CC = {
+        仕入: ["#E8F4FD", "#1A5276"],
+        衛生管理費: ["#E8F8F0", "#1B4332"],
+        備品代: ["#FEF5E0", "#7D4C0B"],
+        消耗品: ["#FEF5E0", "#7D4C0B"],
+        打合せ: ["#F2F2F0", "#444"],
+        飲食代: ["#FBE8F0", "#6C2048"],
+        交通費: ["#F2F2F0", "#444"],
+        "郵送料・レターパック": ["#F2F2F0", "#444"],
+        振込手数料: ["#F2F2F0", "#444"],
+        コピー代: ["#F2F2F0", "#444"],
+        書籍代: ["#EDE8FA", "#3A1F7A"],
+        給与: ["#FBEAEA", "#7B1D1D"],
+        駐車料金: ["#F2F2F0", "#444"],
+        借入金返済: ["#FBEAEA", "#7B1D1D"],
+        借入金利息: ["#FBEAEA", "#7B1D1D"],
+        引出: ["#F2F2F0", "#444"],
+        諸会費: ["#EDE8FA", "#3A1F7A"],
+        コスチューム代: ["#FBE8F0", "#6C2048"],
+        売上: ["#E8F8F0", "#1B4332"],
+        預入: ["#E8F8F0", "#1B4332"],
+        その他収入: ["#E8F8F0", "#1B4332"],
+        その他: ["#F2F2F0", "#444"],
+      };
+      const IC = {
+        "美容薬剤・カラー剤": ["#E8F4FD", "#1A5276"],
+        販売品: ["#E8F8F0", "#1B4332"],
+        ネイル用品: ["#EDE8FA", "#3A1F7A"],
+        "タオル・衛生消耗品": ["#E8F8F0", "#1B4332"],
+        "備品・その他": ["#F2F2F0", "#444"],
+      };
+
+      /* ══════════════════ State ══════════════════ */
+      const STORE_KEY = "salon_v2";
+      let state = { ledger: [], inventory: [], stock: [] };
+      let invFilter = "all",
+        eTab = "expense",
+        saving = false,
+        curPage = "ledger";
+
+      /* ── 初期データ ── */
+      const INIT_INV = [
+        {
+          id: 1,
+          name: "カラー剤（ブラック系）",
+          cat: "美容薬剤・カラー剤",
+          stock: 8,
+          unit: "本",
+          price: 620,
+          min: 5,
+          last: "",
+        },
+        {
+          id: 2,
+          name: "カラー剤（ブラウン系）",
+          cat: "美容薬剤・カラー剤",
+          stock: 3,
+          unit: "本",
+          price: 620,
+          min: 5,
+          last: "",
+        },
+        {
+          id: 3,
+          name: "カラー剤（アッシュ系）",
+          cat: "美容薬剤・カラー剤",
+          stock: 6,
+          unit: "本",
+          price: 620,
+          min: 5,
+          last: "",
+        },
+        {
+          id: 4,
+          name: "オキシ6%",
+          cat: "美容薬剤・カラー剤",
+          stock: 12,
+          unit: "本",
+          price: 380,
+          min: 5,
+          last: "",
+        },
+        {
+          id: 5,
+          name: "ブリーチパウダー",
+          cat: "美容薬剤・カラー剤",
+          stock: 2,
+          unit: "袋",
+          price: 2200,
+          min: 3,
+          last: "",
+        },
+        {
+          id: 6,
+          name: "パーマ液1剤",
+          cat: "美容薬剤・カラー剤",
+          stock: 6,
+          unit: "本",
+          price: 1200,
+          min: 4,
+          last: "",
+        },
+        {
+          id: 7,
+          name: "パーマ液2剤",
+          cat: "美容薬剤・カラー剤",
+          stock: 6,
+          unit: "本",
+          price: 980,
+          min: 4,
+          last: "",
+        },
+        {
+          id: 8,
+          name: "トリートメント（業務用）",
+          cat: "美容薬剤・カラー剤",
+          stock: 4,
+          unit: "kg",
+          price: 4800,
+          min: 2,
+          last: "",
+        },
+        {
+          id: 9,
+          name: "シャンプー（販売・モイスト）",
+          cat: "販売品",
+          stock: 15,
+          unit: "本",
+          price: 2800,
+          min: 5,
+          last: "",
+        },
+        {
+          id: 10,
+          name: "トリートメント（販売用）",
+          cat: "販売品",
+          stock: 12,
+          unit: "本",
+          price: 3200,
+          min: 5,
+          last: "",
+        },
+        {
+          id: 11,
+          name: "ヘアオイル",
+          cat: "販売品",
+          stock: 8,
+          unit: "本",
+          price: 3500,
+          min: 3,
+          last: "",
+        },
+        {
+          id: 12,
+          name: "スタイリングワックス",
+          cat: "販売品",
+          stock: 9,
+          unit: "個",
+          price: 1800,
+          min: 4,
+          last: "",
+        },
+        {
+          id: 13,
+          name: "ジェルネイル（クリア）",
+          cat: "ネイル用品",
+          stock: 5,
+          unit: "個",
+          price: 1200,
+          min: 3,
+          last: "",
+        },
+        {
+          id: 14,
+          name: "ジェルネイル（カラー各色）",
+          cat: "ネイル用品",
+          stock: 40,
+          unit: "個",
+          price: 900,
+          min: 10,
+          last: "",
+        },
+        {
+          id: 15,
+          name: "ベースコート",
+          cat: "ネイル用品",
+          stock: 4,
+          unit: "本",
+          price: 1500,
+          min: 3,
+          last: "",
+        },
+        {
+          id: 16,
+          name: "トップコート",
+          cat: "ネイル用品",
+          stock: 3,
+          unit: "本",
+          price: 1500,
+          min: 3,
+          last: "",
+        },
+        {
+          id: 17,
+          name: "ジェルリムーバー",
+          cat: "ネイル用品",
+          stock: 6,
+          unit: "本",
+          price: 800,
+          min: 3,
+          last: "",
+        },
+        {
+          id: 18,
+          name: "ネイルファイル",
+          cat: "ネイル用品",
+          stock: 50,
+          unit: "枚",
+          price: 80,
+          min: 20,
+          last: "",
+        },
+        {
+          id: 19,
+          name: "フェイスタオル",
+          cat: "タオル・衛生消耗品",
+          stock: 60,
+          unit: "枚",
+          price: 280,
+          min: 20,
+          last: "",
+        },
+        {
+          id: 20,
+          name: "バスタオル",
+          cat: "タオル・衛生消耗品",
+          stock: 20,
+          unit: "枚",
+          price: 550,
+          min: 10,
+          last: "",
+        },
+        {
+          id: 21,
+          name: "使い捨てケープ",
+          cat: "タオル・衛生消耗品",
+          stock: 200,
+          unit: "枚",
+          price: 25,
+          min: 50,
+          last: "",
+        },
+        {
+          id: 22,
+          name: "手袋（使い捨て）",
+          cat: "タオル・衛生消耗品",
+          stock: 4,
+          unit: "箱",
+          price: 980,
+          min: 3,
+          last: "",
+        },
+        {
+          id: 23,
+          name: "衛生消耗品（ダスキン）",
+          cat: "タオル・衛生消耗品",
+          stock: 1,
+          unit: "式",
+          price: 1760,
+          min: 1,
+          last: "",
+        },
+        {
+          id: 24,
+          name: "コピー用紙・文具",
+          cat: "備品・その他",
+          stock: 3,
+          unit: "箱",
+          price: 500,
+          min: 1,
+          last: "",
+        },
+      ];
+      const INIT_LED = [
+        {
+          id: 1,
+          date: "2025-12-01",
+          type: "expense",
+          amount: 1760,
+          cat: "衛生管理費",
+          payee: "ダスキン",
+          iid: null,
+          qty: 0,
+          note: "",
+        },
+        {
+          id: 2,
+          date: "2025-12-02",
+          type: "expense",
+          amount: 213672,
+          cat: "仕入",
+          payee: "M TG",
+          iid: 1,
+          qty: 30,
+          note: "",
+        },
+        {
+          id: 3,
+          date: "2025-12-04",
+          type: "expense",
+          amount: 330,
+          cat: "備品代",
+          payee: "ダイソー",
+          iid: null,
+          qty: 0,
+          note: "",
+        },
+        {
+          id: 4,
+          date: "2025-12-08",
+          type: "expense",
+          amount: 15411,
+          cat: "仕入",
+          payee: "TAT",
+          iid: 7,
+          qty: 15,
+          note: "",
+        },
+        {
+          id: 5,
+          date: "2025-12-09",
+          type: "expense",
+          amount: 18172,
+          cat: "飲食代",
+          payee: "青松",
+          iid: null,
+          qty: 0,
+          note: "忘年会",
+        },
+        {
+          id: 6,
+          date: "2025-12-13",
+          type: "expense",
+          amount: 1760,
+          cat: "衛生管理費",
+          payee: "ダスキン",
+          iid: null,
+          qty: 0,
+          note: "",
+        },
+        {
+          id: 7,
+          date: "2025-12-20",
+          type: "expense",
+          amount: 24728,
+          cat: "仕入",
+          payee: "ファイブ",
+          iid: 14,
+          qty: 20,
+          note: "",
+        },
+        {
+          id: 8,
+          date: "2025-10-01",
+          type: "expense",
+          amount: 10000,
+          cat: "仕入",
+          payee: "ネイルパートナー",
+          iid: 13,
+          qty: 8,
+          note: "",
+        },
+        {
+          id: 9,
+          date: "2025-10-05",
+          type: "expense",
+          amount: 11174,
+          cat: "仕入",
+          payee: "Ash中野",
+          iid: 6,
+          qty: 9,
+          note: "",
+        },
+        {
+          id: 10,
+          date: "2025-10-15",
+          type: "expense",
+          amount: 31126,
+          cat: "仕入",
+          payee: "ネイルパートナー",
+          iid: 14,
+          qty: 30,
+          note: "",
+        },
+        {
+          id: 11,
+          date: "2025-09-11",
+          type: "expense",
+          amount: 5039,
+          cat: "仕入",
+          payee: "MTG",
+          iid: 1,
+          qty: 8,
+          note: "",
+        },
+        {
+          id: 12,
+          date: "2025-09-14",
+          type: "expense",
+          amount: 8085,
+          cat: "仕入",
+          payee: "ファイブ",
+          iid: 3,
+          qty: 13,
+          note: "",
+        },
+        {
+          id: 13,
+          date: "2025-08-18",
+          type: "expense",
+          amount: 52650,
+          cat: "仕入",
+          payee: "M TG",
+          iid: 8,
+          qty: 10,
+          note: "",
+        },
+        {
+          id: 14,
+          date: "2025-08-18",
+          type: "expense",
+          amount: 15400,
+          cat: "仕入",
+          payee: "アディクト",
+          iid: 9,
+          qty: 5,
+          note: "",
+        },
+        {
+          id: 15,
+          date: "2025-07-15",
+          type: "expense",
+          amount: 46977,
+          cat: "仕入",
+          payee: "M TG",
+          iid: 1,
+          qty: 70,
+          note: "",
+        },
+        {
+          id: 16,
+          date: "2025-06-12",
+          type: "expense",
+          amount: 34463,
+          cat: "仕入",
+          payee: "ネイルパートナー",
+          iid: 14,
+          qty: 38,
+          note: "",
+        },
+      ];
+      const INIT_STK = [
+        {
+          id: 1,
+          date: "2025-12-08",
+          name: "パーマ液2剤",
+          cat: "美容薬剤・カラー剤",
+          type: "入荷",
+          qty: 15,
+          price: 980,
+          note: "TAT",
+        },
+        {
+          id: 2,
+          date: "2025-12-20",
+          name: "ジェルネイル（カラー各色）",
+          cat: "ネイル用品",
+          type: "入荷",
+          qty: 20,
+          price: 900,
+          note: "ファイブ",
+        },
+        {
+          id: 3,
+          date: "2025-12-15",
+          name: "カラー剤（ブラウン系）",
+          cat: "美容薬剤・カラー剤",
+          type: "使用",
+          qty: -2,
+          price: 620,
+          note: "",
+        },
+        {
+          id: 4,
+          date: "2025-12-18",
+          name: "トップコート",
+          cat: "ネイル用品",
+          type: "使用",
+          qty: -1,
+          price: 1500,
+          note: "",
+        },
+      ];
+
+      /* ══════════════════ ストレージ (クラウド同期) ══════════════════ */
+      let _saveTimer = null;
+      let _suppressNextSnap = false;
+      function saveState() {
+        // オフライン保険として localStorage にもバックアップ
+        try {
+          localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        } catch (e) {}
+        // クラウドへ debounce 書き込み (連打しても 1 回にまとめる)
+        if (!window.cloud) return;
+        _suppressNextSnap = true;
+        clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(() => {
+          window.cloud
+            .setDoc(window.cloud.ref, {
+              data: state,
+              updatedAt: window.cloud.serverTimestamp(),
+            })
+            .catch((e) => {
+              console.error("save error", e);
+              toast("クラウド保存に失敗: " + (e && e.message ? e.message : e));
+            });
+        }, 400);
+      }
+      function loadState() {
+        // 初期表示用 — クラウドからの onSnapshot が後で state を上書きする
+        try {
+          const s = localStorage.getItem(STORE_KEY);
+          if (s) {
+            state = JSON.parse(s);
+            return;
+          }
+        } catch (e) {}
+        state = { ledger: INIT_LED, inventory: INIT_INV, stock: INIT_STK };
+      }
+      function rerenderCurrentPage() {
+        if (curPage === "ledger") renderLedger();
+        else if (curPage === "inventory") renderInventory();
+        else if (curPage === "stock") renderStock();
+        else if (curPage === "alerts") renderAlerts();
+        else if (curPage === "report") renderReport();
+        else if (curPage === "tax") renderTax();
+      }
+      function refreshAlertBadge() {
+        const n = state.inventory.filter((i) => i.stock <= i.min).length;
+        const nb = document.getElementById("nav-badge");
+        if (nb) {
+          nb.textContent = n;
+          nb.style.display = n ? "" : "none";
+        }
+        const dot = document.getElementById("bni-dot");
+        if (dot) dot.className = "bni-dot" + (n ? " on" : "");
+      }
+      function startCloudSync() {
+        if (!window.cloud) return;
+        let firstSnap = true;
+        window.cloud.onSnapshot(
+          window.cloud.ref,
+          (snap) => {
+            // 自分の書き込みがそのまま返ってきた場合は再描画スキップ
+            if (_suppressNextSnap && !firstSnap) {
+              _suppressNextSnap = false;
+              return;
+            }
+            if (snap.exists()) {
+              const d = snap.data();
+              if (
+                d &&
+                d.data &&
+                d.data.ledger &&
+                d.data.inventory &&
+                d.data.stock
+              ) {
+                state = d.data;
+                try {
+                  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+                } catch (e) {}
+                rerenderCurrentPage();
+                refreshAlertBadge();
+                rebuildItemSel();
+                firstSnap = false;
+                return;
+              }
+            }
+            if (firstSnap) {
+              // クラウド側にまだデータが無い → 初期データを投入
+              window.cloud
+                .setDoc(window.cloud.ref, {
+                  data: state,
+                  updatedAt: window.cloud.serverTimestamp(),
+                })
+                .catch((e) => console.error(e));
+            }
+            firstSnap = false;
+          },
+          (e) => {
+            console.error("snapshot error", e);
+            toast("同期エラー: " + (e && e.message ? e.message : e));
+          },
+        );
+      }
+
+      /* ══════════════════ ヘルパー ══════════════════ */
+      const fmt = (n) => "¥" + (Math.round(n) || 0).toLocaleString();
+      const td = () => new Date().toISOString().slice(0, 10);
+      const yOf = (d) => String(d || "").slice(0, 4);
+      const mOf = (d) => String(d || "").slice(5, 7);
+      const maxId = (arr) =>
+        arr.length ? Math.max(...arr.map((r) => r.id || 0)) : 0;
+
+      function catBdg(c) {
+        const [bg, fg] = CC[c] || ["#F2F2F0", "#444"];
+        return `<span class="bdg" style="background:${bg};color:${fg}">${c}</span>`;
+      }
+      function invBdg(c) {
+        const [bg, fg] = IC[c] || ["#F2F2F0", "#444"];
+        return `<span class="bdg" style="background:${bg};color:${fg}">${c}</span>`;
+      }
+      function stsBdg(s, m) {
+        if (s <= m)
+          return '<span class="bdg" style="background:#FBEAEA;color:#7B1D1D">要補充</span>';
+        if (s <= m * 1.5)
+          return '<span class="bdg" style="background:#FEF5E0;color:#7D4C0B">少なめ</span>';
+        return '<span class="bdg" style="background:#E8F8F0;color:#1B4332">良好</span>';
+      }
+
+      /* ══════════════════ ドロワー ══════════════════ */
+      function toggleDrawer() {
+        const o = document.getElementById("overlay"),
+          d = document.getElementById("drawer");
+        const open = o.classList.contains("show");
+        o.classList.toggle("show", !open);
+        d.classList.toggle("show", !open);
+      }
+      function closeDrawer() {
+        document.getElementById("overlay").classList.remove("show");
+        document.getElementById("drawer").classList.remove("show");
+      }
+
+      /* ══════════════════ ページ遷移 ══════════════════ */
+      function goPage(id, title, navEl) {
+        document
+          .querySelectorAll(".pg")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("pg-" + id).classList.add("active");
+        document.getElementById("page-title").textContent = title;
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
+        document
+          .querySelectorAll(".bni")
+          .forEach((n) => n.classList.remove("active"));
+        if (navEl) navEl.classList.add("active");
+        const bn = document.getElementById("bn-" + id);
+        if (bn) bn.classList.add("active");
+        curPage = id;
+        closeDrawer();
+        document.getElementById("main").scrollTop = 0;
+        if (id === "ledger") renderLedger();
+        if (id === "inventory") renderInventory();
+        if (id === "stock") renderStock();
+        if (id === "alerts") renderAlerts();
+        if (id === "report") renderReport();
+        if (id === "tax") renderTax();
+      }
+
+      /* ══════════════════ 年月セレクト ══════════════════ */
+      function buildYMSels() {
+        const years = [
+          ...new Set([
+            ...state.ledger.map((e) => yOf(e.date)).filter(Boolean),
+            "2024",
+            "2025",
+            "2026",
+          ]),
+        ]
+          .sort()
+          .reverse();
+        const months = [
+          { v: "all", l: "全月" },
+          ...Array.from({ length: 12 }, (_, i) => ({
+            v: String(i + 1).padStart(2, "0"),
+            l: i + 1 + "月",
+          })),
+        ];
+        ["l-year", "r-year", "t-year"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const cur = el.value || years[0];
+          el.innerHTML = years
+            .map((y) => `<option value="${y}">${y}年</option>`)
+            .join("");
+          el.value = years.includes(cur) ? cur : years[0];
+        });
+        ["l-month", "r-month"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const cur = el.value;
+          el.innerHTML = months
+            .map((m) => `<option value="${m.v}">${m.l}</option>`)
+            .join("");
+          el.value = cur || "12";
+        });
+      }
+
+      function filtL(y, m) {
+        return state.ledger
+          .filter(
+            (e) => yOf(e.date) === y && (m === "all" || mOf(e.date) === m),
+          )
+          .sort((a, b) => a.date.localeCompare(b.date));
+      }
+
+      /* ══════════════════ 出納帳 ══════════════════ */
+      function renderLedger() {
+        const y = document.getElementById("l-year")?.value || "2025";
+        const m = document.getElementById("l-month")?.value || "all";
+        const rows = filtL(y, m);
+        let bal = 0;
+        const brows = rows.map((e) => {
+          bal += (e.type === "income" ? 1 : -1) * e.amount;
+          return { ...e, bal };
+        });
+        const tIn = rows
+          .filter((e) => e.type === "income")
+          .reduce((s, e) => s + e.amount, 0);
+        const tOut = rows
+          .filter((e) => e.type === "expense")
+          .reduce((s, e) => s + e.amount, 0);
+        const tSh = rows
+          .filter((e) => e.cat === "仕入")
+          .reduce((s, e) => s + e.amount, 0);
+        document.getElementById("l-mets").innerHTML = `
+    <div class="met"><div class="met-l">収入合計</div><div class="met-v" style="color:#1B4332">${fmt(tIn)}</div></div>
+    <div class="met"><div class="met-l">支出合計</div><div class="met-v" style="color:#7B1D1D">${fmt(tOut)}</div></div>
+    <div class="met"><div class="met-l">差引残高</div><div class="met-v" style="color:${tIn - tOut >= 0 ? "#1B4332" : "#7B1D1D"}">${fmt(tIn - tOut)}</div></div>
+    <div class="met"><div class="met-l">うち仕入</div><div class="met-v">${fmt(tSh)}</div></div>`;
+        document.getElementById("l-tbody").innerHTML = brows.length
+          ? brows
+              .map((e) => {
+                const item = e.iid
+                  ? state.inventory.find((i) => i.id === e.iid)
+                  : null;
+                return `<tr>
+      <td style="color:var(--txt2)">${String(e.date).slice(5)}</td>
+      <td class="r" style="color:#1B4332;font-weight:600">${e.type === "income" ? fmt(e.amount) : ""}</td>
+      <td class="r" style="color:#7B1D1D;font-weight:600">${e.type === "expense" ? fmt(e.amount) : ""}</td>
+      <td class="r" style="font-weight:700">${fmt(e.bal)}</td>
+      <td>${catBdg(e.cat)}</td>
+      <td style="color:var(--txt2)">${e.payee || ""}</td>
+      <td style="color:var(--txt2)">${item ? item.name : ""}</td>
+      <td class="r" style="color:var(--txt2)">${e.qty || ""}</td>
+      <td style="color:var(--txt3)">${e.note || ""}</td>
+      <td><button class="btn danger sm" onclick="delLedger(${e.id})" aria-label="削除"><i class="ti ti-x"></i></button></td>
+    </tr>`;
+              })
+              .join("")
+          : `<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:30px">記録はありません</td></tr>`;
+      }
+
+      /* ══════════════════ 記録フォーム ══════════════════ */
+      function rebuildItemSel() {
+        document.getElementById("e-item").innerHTML =
+          '<option value="">（品目を選択）</option>' +
+          state.inventory
+            .map(
+              (i) => `<option value="${i.id}">${i.name}（${i.cat}）</option>`,
+            )
+            .join("");
+      }
+      function setCatOpts() {
+        document.getElementById("e-cat").innerHTML = (
+          eTab === "expense" ? EXP : INC
+        )
+          .map((c) => `<option>${c}</option>`)
+          .join("");
+        onCatCh();
+      }
+      function setETab(t) {
+        eTab = t;
+        document.getElementById("et-exp").className =
+          "etab" + (t === "expense" ? " active" : "");
+        document.getElementById("et-inc").className =
+          "etab" + (t === "income" ? " active" : "");
+        setCatOpts();
+      }
+      function onCatCh() {
+        document.getElementById("e-inv-area").style.display =
+          document.getElementById("e-cat").value === "仕入" ? "block" : "none";
+      }
+      function onItemCh() {
+        const i = state.inventory.find(
+          (x) => x.id === parseInt(document.getElementById("e-item").value),
+        );
+        if (i) document.getElementById("e-up").value = i.price;
+      }
+
+      function submitEntry() {
+        if (saving) return;
+        const date = document.getElementById("e-date").value;
+        const amount = parseInt(document.getElementById("e-amount").value) || 0;
+        const cat = document.getElementById("e-cat").value;
+        const payee = document.getElementById("e-payee").value.trim();
+        const note = document.getElementById("e-note").value.trim();
+        if (!date || !amount || !cat) {
+          toast("日付・金額・内容は必須です");
+          return;
+        }
+        const iid =
+          cat === "仕入"
+            ? parseInt(document.getElementById("e-item").value) || null
+            : null;
+        const qty = iid
+          ? parseInt(document.getElementById("e-qty").value) || 0
+          : 0;
+        const up = iid
+          ? parseInt(document.getElementById("e-up").value) || 0
+          : 0;
+        const newId = maxId(state.ledger) + 1;
+        state.ledger.push({
+          id: newId,
+          date,
+          type: eTab,
+          amount,
+          cat,
+          payee,
+          iid,
+          qty,
+          note,
+        });
+        if (cat === "仕入" && iid && qty > 0) {
+          state.inventory = state.inventory.map((i) => {
+            if (i.id !== iid) return i;
+            return {
+              ...i,
+              stock: i.stock + qty,
+              price: up > 0 ? up : i.price,
+              last: date,
+            };
+          });
+          const item = state.inventory.find((i) => i.id === iid);
+          if (item)
+            state.stock.unshift({
+              id: maxId(state.stock) + 1,
+              date,
+              name: item.name,
+              cat: item.cat,
+              type: "入荷",
+              qty,
+              price: up || item.price,
+              note: payee,
+            });
+        }
+        saveState();
+        buildYMSels();
+        renderAll();
+        ["e-amount", "e-payee", "e-note", "e-qty", "e-up"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        document.getElementById("e-item").value = "";
+        toast(
+          cat === "仕入" ? "仕入を記録し在庫を更新しました" : "記録しました",
+        );
+      }
+
+      function delLedger(id) {
+        if (!confirm("この記録を削除しますか？")) return;
+        state.ledger = state.ledger.filter((e) => e.id !== id);
+        saveState();
+        renderLedger();
+        toast("削除しました");
+      }
+
+      /* ══════════════════ 在庫 ══════════════════ */
+      function renderInventory() {
+        const items =
+          invFilter === "all"
+            ? state.inventory
+            : state.inventory.filter((i) => i.cat === invFilter);
+        document.getElementById("inv-tbody").innerHTML =
+          items
+            .map(
+              (i) => `<tr>
+    <td style="font-weight:600" title="${i.name}">${i.name}</td>
+    <td>${invBdg(i.cat)}</td>
+    <td class="r" style="font-weight:700;color:${i.stock <= i.min ? "#7B1D1D" : "#1B4332"}">${i.stock}</td>
+    <td style="color:var(--txt2)">${i.unit}</td>
+    <td class="r">${fmt(i.price)}</td>
+    <td class="r" style="font-weight:600">${fmt(i.stock * i.price)}</td>
+    <td>${stsBdg(i.stock, i.min)}</td>
+    <td><button class="btn sm" onclick="openStockModal('use',${i.id})" style="padding:5px 10px;min-height:32px;font-size:12px">使用</button></td>
+    <td><button class="btn sm" onclick="openEditModal(${i.id})" style="padding:5px 10px;min-height:32px;font-size:12px">修正</button></td>
+  </tr>`,
+            )
+            .join("") ||
+          `<tr><td colspan="9" style="text-align:center;color:var(--txt3);padding:28px">データなし</td></tr>`;
+      }
+      function setIF(cat, el) {
+        invFilter = cat;
+        document
+          .querySelectorAll(".fb")
+          .forEach((b) => b.classList.remove("active"));
+        el.classList.add("active");
+        renderInventory();
+      }
+
+      /* ══════════════════ 入出庫 ══════════════════ */
+      function renderStock() {
+        document.getElementById("stk-list").innerHTML =
+          state.stock
+            .map(
+              (m) => `
+    <div class="lcard">
+      <div class="lcard-row">
+        <span style="font-weight:700;font-size:15px">${m.name}</span>
+        <span class="bdg" style="background:${m.type === "入荷" ? "#E8F8F0" : "#E8F4FD"};color:${m.type === "入荷" ? "#1B4332" : "#1A5276"}">${m.type}</span>
+      </div>
+      <div class="lcard-row">
+        <span style="font-size:13px;color:var(--txt2)">${m.date}</span>
+        <span style="font-weight:700;font-size:18px;color:${m.qty < 0 ? "#7B1D1D" : "#1B4332"}">${m.qty > 0 ? "+" : ""}${m.qty}</span>
+      </div>
+      <div class="lcard-row">
+        <span style="font-size:13px;color:var(--txt3)">${m.cat}</span>
+        <span style="font-size:14px;color:var(--txt2)">${fmt(Math.abs(m.qty * m.price))}</span>
+      </div>
+      ${m.note ? `<div style="font-size:12px;color:var(--txt3);margin-top:4px">${m.note}</div>` : ""}
+    </div>`,
+            )
+            .join("") ||
+          `<div class="empty"><i class="ti ti-arrows-exchange"></i><p>記録なし</p></div>`;
+      }
+
+      /* ══════════════════ アラート ══════════════════ */
+      function renderAlerts() {
+        const low = state.inventory
+          .filter((i) => i.stock <= i.min * 1.5)
+          .sort((a, b) => a.stock / a.min - b.stock / b.min);
+        document.getElementById("alert-list").innerHTML = low.length
+          ? low
+              .map(
+                (i) => `
+    <div class="al-card">
+      <div class="al-icon" style="background:${i.stock <= i.min ? "#FBEAEA" : "#FEF5E0"}">
+        <i class="ti ti-alert-triangle" style="color:${i.stock <= i.min ? "#7B1D1D" : "#7D4C0B"}"></i>
+      </div>
+      <div class="al-info">
+        <div class="al-name">${i.name}</div>
+        <div class="al-sub">現在 ${i.stock}${i.unit}　／　最低 ${i.min}${i.unit}</div>
+      </div>
+      <button class="btn green sm" onclick="openStockModal('receive',${i.id})" style="flex-shrink:0"><i class="ti ti-plus"></i>入荷</button>
+    </div>`,
+              )
+              .join("")
+          : `<div class="empty"><i class="ti ti-circle-check" style="color:var(--accent)"></i><p>補充が必要な商品はありません</p></div>`;
+      }
+
+      /* ══════════════════ 月次集計 ══════════════════ */
+      function renderReport() {
+        const y = document.getElementById("r-year")?.value || "2025";
+        const m = document.getElementById("r-month")?.value || "all";
+        const rows = filtL(y, m);
+        const rIn = rows
+          .filter((e) => e.type === "income")
+          .reduce((s, e) => s + e.amount, 0);
+        const rOut = rows
+          .filter((e) => e.type === "expense")
+          .reduce((s, e) => s + e.amount, 0);
+        const rSh = rows
+          .filter((e) => e.cat === "仕入")
+          .reduce((s, e) => s + e.amount, 0);
+        document.getElementById("r-mets").innerHTML = `
+    <div class="met"><div class="met-l">収入</div><div class="met-v" style="color:#1B4332">${fmt(rIn)}</div></div>
+    <div class="met"><div class="met-l">支出</div><div class="met-v" style="color:#7B1D1D">${fmt(rOut)}</div></div>
+    <div class="met"><div class="met-l">差引</div><div class="met-v" style="color:${rIn - rOut >= 0 ? "#1B4332" : "#7B1D1D"}">${fmt(rIn - rOut)}</div></div>
+    <div class="met"><div class="met-l">うち仕入</div><div class="met-v">${fmt(rSh)}</div></div>`;
+        const cm = {};
+        rows
+          .filter((e) => e.type === "expense")
+          .forEach((e) => {
+            cm[e.cat] = (cm[e.cat] || 0) + e.amount;
+          });
+        document.getElementById("r-cats").innerHTML =
+          `<div class="rcard-title">内容別集計（支出）</div>` +
+          (Object.keys(cm).length
+            ? Object.entries(cm)
+                .sort((a, b) => b[1] - a[1])
+                .map(
+                  ([c, a]) => `
+      <div class="rrow">${catBdg(c)}<span style="font-weight:700;font-size:16px">${fmt(a)}</span></div>`,
+                )
+                .join("")
+            : `<div class="empty" style="padding:20px"><p>記録なし</p></div>`);
+      }
+
+      /* ══════════════════ 棚卸・確定申告 ══════════════════ */
+      function renderTax() {
+        const y = document.getElementById("t-year")?.value || "2025";
+        const invTotal = state.inventory.reduce(
+          (s, i) => s + i.stock * i.price,
+          0,
+        );
+        const shiire = state.ledger
+          .filter((e) => yOf(e.date) === y && e.cat === "仕入")
+          .reduce((s, e) => s + e.amount, 0);
+        const cm = {};
+        CAT_INV.forEach((c) => {
+          const it = state.inventory.filter((i) => i.cat === c);
+          cm[c] = {
+            n: it.length,
+            v: it.reduce((s, i) => s + i.stock * i.price, 0),
+          };
+        });
+        document.getElementById("tax-body").innerHTML = `
+    <div class="mets" style="margin-bottom:12px">
+      <div class="met"><div class="met-l">期末在庫評価額</div><div class="met-v">${fmt(invTotal)}</div><div style="font-size:11px;color:var(--txt3);margin-top:4px">棚卸資産として申告</div></div>
+      <div class="met"><div class="met-l">${y}年 仕入合計</div><div class="met-v">${fmt(shiire)}</div><div style="font-size:11px;color:var(--txt3);margin-top:4px">売上原価として算入</div></div>
+    </div>
+    <div class="rcard" style="margin-bottom:11px">
+      <div class="rcard-title">カテゴリ別棚卸明細（${y}年度末）</div>
+      <table class="tax-tbl">
+        <thead><tr><th>カテゴリ</th><th class="r">品目数</th><th class="r">評価額</th></tr></thead>
+        <tbody>
+          ${CAT_INV.map((c) => `<tr><td>${c}</td><td class="r">${cm[c].n}</td><td class="r" style="font-weight:600">${fmt(cm[c].v)}</td></tr>`).join("")}
+        </tbody>
+        <tfoot><tr><td>合計</td><td class="r">${state.inventory.length}</td><td class="r">${fmt(invTotal)}</td></tr></tfoot>
+      </table>
+    </div>
+    <div class="rcard tax-hint">
+      <div class="rcard-title" style="color:#1B4332">確定申告への活用方法</div>
+      <ul>
+        <li>期末在庫評価額 → 青色申告「期末棚卸高」に記入</li>
+        <li>仕入合計 → 売上原価「仕入高」として経費算入</li>
+        <li>消耗品費・衛生管理費 → 科目別合計を経費として記入</li>
+        <li>棚卸表Excel出力 → 税理士への提出資料に活用</li>
+      </ul>
+    </div>`;
+      }
+
+      /* ══════════════════ モーダル ══════════════════ */
+      function openStockModal(mode, pfId) {
+        const isR = mode === "receive";
+        document.getElementById("m-title").textContent = isR
+          ? "入荷登録"
+          : "使用登録";
+        document.getElementById("m-body").innerHTML = `
+    <div class="fr"><label>商品 *</label><select id="m-item">${state.inventory.map((i) => `<option value="${i.id}"${i.id === pfId ? " selected" : ""}>${i.name}（${i.cat}）</option>`).join("")}</select></div>
+    <div class="fr2">
+      <div class="fr"><label>${isR ? "入荷" : "使用"}数量 *</label><input type="number" id="m-qty" value="1" min="1" inputmode="numeric"></div>
+      ${isR ? '<div class="fr"><label>仕入単価（円）</label><input type="number" id="m-price" placeholder="0" min="0" inputmode="numeric"></div>' : "<div></div>"}
+    </div>
+    <div class="fr" style="margin-bottom:18px"><label>備考</label><input type="text" id="m-note" placeholder="${isR ? "仕入先など" : "施術内容など（任意）"}"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">キャンセル</button>
+      <button class="btn green" onclick="submitStock('${mode}')">登録する</button>
+    </div>`;
+        document.getElementById("modal-ov").classList.add("show");
+      }
+
+      function openEditModal(id) {
+        const item = state.inventory.find((i) => i.id === id);
+        document.getElementById("m-title").textContent =
+          "在庫を修正：" + item.name;
+        document.getElementById("m-body").innerHTML = `
+    <div class="fr"><label>現在庫数</label><input type="number" id="m-stock" value="${item.stock}" min="0" inputmode="numeric"></div>
+    <div class="fr"><label>仕入単価（円）</label><input type="number" id="m-price" value="${item.price}" min="0" inputmode="numeric"></div>
+    <div class="fr" style="margin-bottom:18px"><label>最低在庫数（アラート基準）</label><input type="number" id="m-min" value="${item.min}" min="0" inputmode="numeric"></div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">キャンセル</button>
+      <button class="btn green" onclick="saveEdit(${id})">保存する</button>
+    </div>`;
+        document.getElementById("modal-ov").classList.add("show");
+      }
+
+      function openAddItemModal() {
+        document.getElementById("m-title").textContent = "新商品を追加";
+        document.getElementById("m-body").innerHTML = `
+    <div class="fr"><label>商品名 *</label><input type="text" id="m-name" placeholder="例: カラー剤（アッシュベージュ）"></div>
+    <div class="fr"><label>カテゴリ</label><select id="m-cat">${CAT_INV.map((c) => `<option>${c}</option>`).join("")}</select></div>
+    <div class="fr2">
+      <div class="fr"><label>初期在庫数</label><input type="number" id="m-stock" value="0" min="0" inputmode="numeric"></div>
+      <div class="fr"><label>単位</label><select id="m-unit">${UNITS.map((u) => `<option>${u}</option>`).join("")}</select></div>
+    </div>
+    <div class="fr2">
+      <div class="fr"><label>仕入単価（円）</label><input type="number" id="m-price" value="0" min="0" inputmode="numeric"></div>
+      <div class="fr" style="margin-bottom:18px"><label>最低在庫数</label><input type="number" id="m-min" value="3" min="0" inputmode="numeric"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">キャンセル</button>
+      <button class="btn green" onclick="addItem()">追加する</button>
+    </div>`;
+        document.getElementById("modal-ov").classList.add("show");
+      }
+
+      function submitStock(mode) {
+        const iid = parseInt(document.getElementById("m-item").value);
+        const qty = parseInt(document.getElementById("m-qty").value) || 1;
+        const note = document.getElementById("m-note").value.trim();
+        const priceEl = document.getElementById("m-price");
+        const price = priceEl ? parseInt(priceEl.value) || 0 : 0;
+        const isR = mode === "receive",
+          delta = isR ? qty : -qty;
+        const item = state.inventory.find((i) => i.id === iid);
+        if (!item) return;
+        state.inventory = state.inventory.map((i) =>
+          i.id !== iid
+            ? i
+            : {
+                ...i,
+                stock: Math.max(0, i.stock + delta),
+                price: isR && price > 0 ? price : i.price,
+                last: isR ? td() : i.last,
+              },
+        );
+        state.stock.unshift({
+          id: maxId(state.stock) + 1,
+          date: td(),
+          name: item.name,
+          cat: item.cat,
+          type: isR ? "入荷" : "使用",
+          qty: delta,
+          price: price || item.price,
+          note,
+        });
+        saveState();
+        closeModal();
+        renderAll();
+        toast(
+          isR
+            ? `${item.name} を ${qty} 入荷しました`
+            : `${item.name} を ${qty} 使用しました`,
+        );
+      }
+
+      function saveEdit(id) {
+        state.inventory = state.inventory.map((i) =>
+          i.id !== id
+            ? i
+            : {
+                ...i,
+                stock: parseInt(document.getElementById("m-stock").value) || 0,
+                price: parseInt(document.getElementById("m-price").value) || 0,
+                min: parseInt(document.getElementById("m-min").value) || 0,
+              },
+        );
+        saveState();
+        closeModal();
+        renderAll();
+        toast("在庫情報を更新しました");
+      }
+
+      function addItem() {
+        const name = document.getElementById("m-name").value.trim();
+        if (!name) {
+          toast("商品名は必須です");
+          return;
+        }
+        const newId = maxId(state.inventory) + 1;
+        state.inventory.push({
+          id: newId,
+          name,
+          cat: document.getElementById("m-cat").value,
+          stock: parseInt(document.getElementById("m-stock").value) || 0,
+          unit: document.getElementById("m-unit").value,
+          price: parseInt(document.getElementById("m-price").value) || 0,
+          min: parseInt(document.getElementById("m-min").value) || 3,
+          last: "",
+        });
+        rebuildItemSel();
+        saveState();
+        closeModal();
+        renderAll();
+        toast(name + "を追加しました");
+      }
+
+      function closeModal() {
+        document.getElementById("modal-ov").classList.remove("show");
+      }
+
+      /* ══════════════════ renderAll ══════════════════ */
+      function renderAll() {
+        buildYMSels();
+        if (curPage === "ledger") renderLedger();
+        if (curPage === "inventory") renderInventory();
+        if (curPage === "stock") renderStock();
+        if (curPage === "alerts") renderAlerts();
+        if (curPage === "report") renderReport();
+        if (curPage === "tax") renderTax();
+        const n = state.inventory.filter((i) => i.stock <= i.min).length;
+        document.getElementById("nav-badge").textContent = n;
+        document.getElementById("nav-badge").style.display = n ? "" : "none";
+        document.getElementById("bni-dot").className =
+          "bni-dot" + (n ? " on" : "");
+      }
+
+      /* ══════════════════ Excel（CSV）出力 ══════════════════ */
+      function dlCSV(data, fname) {
+        const bom = "\uFEFF";
+        const csv = data
+          .map((r) =>
+            r.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","),
+          )
+          .join("\n");
+        const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fname;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportLedger() {
+        const y = document.getElementById("l-year")?.value || "2025";
+        const m = document.getElementById("l-month")?.value || "all";
+        const rows = filtL(y, m);
+        let bal = 0;
+        const label = m === "all" ? y + "年" : y + "年" + m + "月";
+        const hd = [
+          "日付",
+          "収入",
+          "支出",
+          "残高",
+          "内容（科目）",
+          "支払先",
+          "在庫品目",
+          "数量",
+          "備考",
+        ];
+        const body = rows.map((e) => {
+          bal += (e.type === "income" ? 1 : -1) * e.amount;
+          const item = e.iid
+            ? state.inventory.find((i) => i.id === e.iid)
+            : null;
+          return [
+            e.date,
+            e.type === "income" ? e.amount : "",
+            e.type === "expense" ? e.amount : "",
+            bal,
+            e.cat,
+            e.payee || "",
+            item ? item.name : "",
+            e.qty || "",
+            e.note || "",
+          ];
+        });
+        dlCSV([hd, ...body], `現金出納帳_${label}.csv`);
+        toast(`現金出納帳（${label}）をダウンロードしました`);
+      }
+
+      function exportInventory() {
+        const y =
+          document.getElementById("t-year")?.value || new Date().getFullYear();
+        const hd = [
+          "商品名",
+          "カテゴリ",
+          "在庫数",
+          "単位",
+          "仕入単価(円)",
+          "在庫評価額(円)",
+          "最低在庫数",
+          "状態",
+          "最終入荷日",
+        ];
+        dlCSV(
+          [
+            hd,
+            ...state.inventory.map((i) => [
+              i.name,
+              i.cat,
+              i.stock,
+              i.unit,
+              i.price,
+              i.stock * i.price,
+              i.min,
+              i.stock <= i.min
+                ? "要補充"
+                : i.stock <= i.min * 1.5
+                  ? "少なめ"
+                  : "良好",
+              i.last || "",
+            ]),
+          ],
+          `棚卸表_${y}年度末.csv`,
+        );
+        toast("棚卸表をダウンロードしました（Excelで開けます）");
+      }
+
+      function exportCurrent() {
+        if (["ledger", "report"].includes(curPage)) exportLedger();
+        else if (["inventory", "tax"].includes(curPage)) exportInventory();
+        else toast("出納帳または在庫ページでExcel出力できます");
+      }
+
+      /* ══════════════════ トースト ══════════════════ */
+      let toastT;
+      function toast(msg) {
+        const el = document.getElementById("toast");
+        el.textContent = msg;
+        el.classList.add("on");
+        clearTimeout(toastT);
+        toastT = setTimeout(() => el.classList.remove("on"), 3500);
+      }
+
+      /* ══════════════════ 初期化 ══════════════════ */
+      function init() {
+        loadState();
+        document.getElementById("e-date").value = td();
+        document.getElementById("payee-dl").innerHTML = PAYEES.map(
+          (p) => `<option value="${p}">`,
+        ).join("");
+        setCatOpts();
+        rebuildItemSel();
+        buildYMSels();
+        renderLedger();
+        refreshAlertBadge();
+        // クラウド接続が確立したら同期を開始
+        if (window.cloud) {
+          startCloudSync();
+        } else {
+          window.addEventListener("cloud-ready", startCloudSync, {
+            once: true,
+          });
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>
